@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyDemo : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class EnemyDemo : MonoBehaviour
     public delegate void EnemyDied(EnemyDemo deadEnemy);
 
     public event EnemyDied onEnemyDied;
+
+    public Slider healthBar;
 
     // NOTE! This code should work for any speed value (large or small)
 
@@ -62,6 +65,7 @@ public class EnemyDemo : MonoBehaviour
         // }
         
 
+        // Waypoint Navigation
         // https://www.youtube.com/watch?v=KxZBAAVvuY4
         transform.position = Vector3.MoveTowards(transform.position,
             waypointList[targetWaypointIndex].transform.position, speed * Time.deltaTime);
@@ -83,22 +87,11 @@ public class EnemyDemo : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
 
-            // get mouse position in world space
-            Vector3 worldMousePosition =
-                Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 100f));
-
-            // get direction vector from camera position to mouse position in world space
-            Vector3 direction = worldMousePosition - Camera.main.transform.position;
-
-            RaycastHit hit;
-
-            // cast a ray from the camera in the given direction
-            if (Physics.Raycast(Camera.main.transform.position, direction, out hit, 100f))
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hitInfo))
             {
-
-                Debug.DrawLine(Camera.main.transform.position, hit.point, Color.green, 0.5f);
-                // Destroy game object
-                if (hit.collider.gameObject.tag == "Enemy")
+                Debug.DrawLine (Camera.main.transform.position, hitInfo.point, Color.red, 0.5f);
+                if (hitInfo.collider.gameObject.tag == "Enemy")
                 {
                     Debug.Log("HIT");
                     health -= 1;
@@ -109,31 +102,24 @@ public class EnemyDemo : MonoBehaviour
                     {
                         coins += 1;
                         enemyDied = true;
-                        Destroy(hit.collider.gameObject);
-                        
+                        Destroy(hitInfo.collider.gameObject);
+
                         tmp_text.SetText("COINS: " + coins);
                     }
 
                 }
+                else
+                {
+                    Debug.DrawLine (Camera.main.transform.position, hitInfo.point, Color.red, 0.5f);
+                }
+            }
 
-            }
-            else
-            {
-                Debug.DrawLine (Camera.main.transform.position, worldMousePosition, Color.red, 0.5f);
-            }
-        } // End of Ray casting if
-        
-        if (enemyDied)
-        {
-            onEnemyDied?.Invoke(this);
         }
-        
-        
-    }
+
+        healthBar.value = health;
+
+    } // End of Ray casting if
 
 
-//-----------------------------------------------------------------------------
-    private void TargetNextWaypoint()
-    {
-    }
 }
+
