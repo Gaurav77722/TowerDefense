@@ -19,6 +19,9 @@ public class EnemyDemo : MonoBehaviour
     public Animator animator;
 
     public TMP_Text tmp_text;
+    
+    public AudioSource audioSrc;
+    public AudioClip audioToPlay;
     //   waypoints
     //   delegate event for outside code to subscribe and be notified of enemy death
     public delegate void EnemyDied(EnemyDemo deadEnemy);
@@ -37,6 +40,7 @@ public class EnemyDemo : MonoBehaviour
         transform.position = new Vector3(waypointList[0].position.x, waypointList[0].position.y, waypointList[0].position.z - 3f);
         targetWaypointIndex = 1;
         animator = GetComponent<Animator>();
+        audioSrc = GetComponent<AudioSource>();
     }
 
     //-----------------------------------------------------------------------------
@@ -79,7 +83,7 @@ public class EnemyDemo : MonoBehaviour
 
         if (!(targetWaypointIndex < 7) && transform.position == waypointList[targetWaypointIndex].transform.position)
         {
-            Debug.Log("YOU LOST");
+            speed = 0;
         }
 
 
@@ -98,11 +102,14 @@ public class EnemyDemo : MonoBehaviour
                     Debug.Log("Health: " + health);
 
                     // Destroy enemy if health < 0
-                    if (health < 0)
+                    if (health <= 0)
                     {
                         coins += 1;
                         enemyDied = true;
+                        audioSrc.clip = audioToPlay;
+                        audioSrc.Play();
                         Destroy(hitInfo.collider.gameObject);
+                        
 
                         tmp_text.SetText("COINS: " + coins);
                     }
