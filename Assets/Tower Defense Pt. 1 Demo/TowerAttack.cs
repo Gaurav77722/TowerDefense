@@ -22,6 +22,8 @@ public class TowerAttack : MonoBehaviour
     }
 
     // Update is called once per frame
+    
+    // https://www.youtube.com/watch?v=oqidgRQAMB8
     void Update()
     {
         GameObject enemy = GameObject.FindGameObjectWithTag(EnemyTag);

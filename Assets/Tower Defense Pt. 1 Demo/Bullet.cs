@@ -28,6 +28,7 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // https://www.youtube.com/watch?v=oqidgRQAMB8
         if (target == null)
         {
             Destroy(gameObject);
@@ -37,6 +38,8 @@ public class Bullet : MonoBehaviour
         Vector3 direction = target.position - transform.position;
         float distanceThisFrame = speed * Time.deltaTime;
 
+        Debug.Log(direction.magnitude + " " + distanceThisFrame);
+        
         if (direction.magnitude <= distanceThisFrame)
         {
             HitTarget();
